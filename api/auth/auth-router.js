@@ -1,20 +1,24 @@
-const router = require('express').Router();
-const Users = require('../users/users-model')
-const { checkUsernameExists, allFilledOut, checkIfUsernameIsReal } = require('../middleware/auth-middleware')
+const router = require("express").Router();
+const Users = require("../users/users-model");
+const {
+  checkUsernameExists,
+  allFilledOut,
+  checkIfUsernameIsReal,
+} = require("../middleware/auth-middleware");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require('./secrets/index')
+const { JWT_SECRET } = require("./secrets/index");
 
-router.post('/register', allFilledOut, checkUsernameExists, (req, res) => {
-  
-  const {username, password} = req.body
-  const hash = bcrypt.hashSync(password, 8)
-  Users.add({username, password: hash})
-    .then(newUser=>{
-      res.status(201).json(newUser)
-    }).catch(err=>{
-      console.log(err)
+router.post("/register", allFilledOut, checkUsernameExists, (req, res) => {
+  const { username, password } = req.body;
+  const hash = bcrypt.hashSync(password, 8);
+  Users.add({ username, password: hash })
+    .then((newUser) => {
+      res.status(201).json(newUser);
     })
+    .catch((err) => {
+      console.log(err);
+    });
 
   /*
     IMPLEMENT
@@ -43,16 +47,15 @@ router.post('/register', allFilledOut, checkUsernameExists, (req, res) => {
   */
 });
 
-router.post('/login', allFilledOut, checkIfUsernameIsReal, (req, res) => {
-  if (bcrypt.compareSync(req.body.password, req.user.password)){
-    const token = buildToken(req.user)
+router.post("/login", allFilledOut, checkIfUsernameIsReal, (req, res) => {
+  if (bcrypt.compareSync(req.body.password, req.user.password)) {
+    const token = buildToken(req.user);
     res.json({
       message: `welcome, ${req.user.username}`,
-      token: token
+      token: token,
     });
-
   } else {
-    res.status(401).json({message: "invalid credentials"})
+    res.status(401).json({ message: "invalid credentials" });
   }
   /*
     IMPLEMENT
